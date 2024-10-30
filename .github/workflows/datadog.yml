@@ -1,0 +1,29 @@
+name: Datadog Integration
+
+on: [push]
+
+jobs:
+  send_metrics_to_datadog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Send metrics to Datadog
+        env:
+          DATADOG_API_KEY: ${{ secrets.d72f82193498cfd82464e3e9d5e1ca1c }}
+        run: |
+          curl -X POST "https://api.datadoghq.com/api/v1/series" \
+          -H "Content-Type: application/json" \
+          -H "DD-API-KEY:d72f82193498cfd82464e3e9d5e1ca1c" \
+          -d '{
+              "series": [
+                {
+                  "metric": "github.actions.metric",
+                  "points": [[`date +%s`, 20]],
+                  "type": "gauge",
+                  "tags": ["environment:test"]
+                }
+              ]
+            }'
